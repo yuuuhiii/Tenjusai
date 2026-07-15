@@ -1,0 +1,174 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>天樹祭キャンパスツアー ライブマップ</title>
+<style>
+:root{
+  --paper:#f7f6f2; --ink:#22211e; --sub:#6d6b64; --line:#d9d7cf;
+  --g1:#2a78d6; --g2:#008300; --g3:#d55181; --g4:#c98500; --g5:#199e70;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{background:var(--paper);color:var(--ink);font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;padding:20px 16px 40px;max-width:960px;margin:0 auto}
+h1{font-size:20px;font-weight:600;letter-spacing:.04em}
+p.sub{font-size:13px;color:var(--sub);margin:4px 0 14px}
+.mapwrap{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
+svg{display:block;width:100%;height:auto}
+.bld{fill:#eceae3;stroke:#b8b5aa;stroke-width:1.5}
+.bldlbl{fill:#8a877d;font-size:13px}
+.spot{fill:#fff;stroke:#55524a;stroke-width:1.5}
+.spotlbl{fill:#33312c;font-size:13px;font-weight:600}
+.route{stroke:#c9c6bb;stroke-width:2;stroke-dasharray:3 5;fill:none}
+.controls{display:flex;align-items:center;gap:12px;margin:14px 0 6px;flex-wrap:wrap}
+button{font:inherit;border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px 16px;cursor:pointer;font-weight:600}
+button:hover{background:#f0efe9}
+input[type=range]{flex:1;min-width:200px;accent-color:#55524a}
+.clock{font-variant-numeric:tabular-nums;font-size:22px;font-weight:600;min-width:110px}
+.clock small{font-size:12px;color:var(--sub);font-weight:400;display:block}
+.speed{font-size:12px;color:var(--sub)}
+.status{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-top:12px}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13px}
+.card b{display:flex;align-items:center;gap:6px;font-size:14px}
+.dotchip{width:10px;height:10px;border-radius:50%;display:inline-block}
+.card span{color:var(--sub)}
+.note{font-size:12px;color:var(--sub);margin-top:14px;line-height:1.7}
+</style>
+</head>
+<body>
+<h1>天樹祭 キャンパスツアー ライブマップ</h1>
+<p class="sub">5グループ同時出発 / 全体61分 / どのスポットも同時に1グループのみ (CP-SAT最適化)</p>
+<div class="mapwrap">
+<svg viewBox="0 0 900 800" role="img" aria-label="キャンパス地図上のグループ位置アニメーション">
+  <g transform="rotate(-18 350 180)">
+    <rect class="bld" x="120" y="120" width="460" height="60" rx="4"/>
+    <rect class="bld" x="140" y="200" width="440" height="55" rx="4"/>
+  </g>
+  <text class="bldlbl" x="180" y="150">久方寮</text>
+  <rect class="bld" x="560" y="220" width="300" height="80" rx="4"/><text class="bldlbl" x="680" y="265">北(N)棟</text>
+  <rect class="bld" x="200" y="380" width="180" height="200" rx="4"/><text class="bldlbl" x="235" y="470">西(W)棟</text>
+  <rect class="bld" x="500" y="360" width="180" height="240" rx="4"/><text class="bldlbl" x="545" y="470">中央(C)棟</text>
+  <circle class="bld" cx="590" cy="330" r="42"/>
+  <rect class="bld" x="770" y="420" width="90" height="180" rx="4"/><text class="bldlbl" x="782" y="415">東(E)棟</text>
+  <rect class="bld" x="380" y="620" width="400" height="130" rx="4"/><text class="bldlbl" x="660" y="700">南(S)棟</text>
+  <rect class="bld" x="60" y="640" width="180" height="90" rx="4"/><text class="bldlbl" x="100" y="690">体育館</text>
+  <g id="routes"></g>
+  <g id="spots"></g>
+  <g id="dots"></g>
+</svg>
+</div>
+<div class="controls">
+  <button id="play">▶ 再生</button>
+  <input type="range" id="time" min="0" max="61" step="0.05" value="0">
+  <div class="clock"><span id="clk">0.0</span> 分<small>スタートから</small></div>
+  <label class="speed">速度 <select id="spd"><option value="1">1x</option><option value="2" selected>2x</option><option value="5">5x</option><option value="10">10x</option></select></label>
+</div>
+<div class="status" id="status"></div>
+<p class="note">●=滞在中, ○(点滅)=待機中, 移動中は経路上を進みます. 破線は主要動線. 実測値が変わったらスケジュールJSONを差し替えるだけで更新できます.</p>
+<script>
+const DATA = {"names": ["4A", "寮", "西棟", "教育実験室", "工房", "CR", "織機", "iPlaza"], "edgeT": [[0, 5, 3, 3, 2, 3, 2, 1], [5, 0, 2, 4, 5, 5, 3, 4], [3, 2, 0, 2, 3, 5, 2, 2], [3, 4, 2, 0, 1, 5, 4, 3], [2, 5, 3, 1, 0, 5, 4, 3], [3, 5, 5, 5, 5, 0, 3, 4], [2, 3, 2, 4, 4, 3, 0, 1], [1, 4, 2, 3, 3, 4, 1, 0]], "groups": [{"name": "G1", "end": 61, "segs": [{"t0": 0, "t1": 5, "k": "move", "n": [0, 7, 1]}, {"t0": 5, "t1": 15, "k": "stay", "n": [1]}, {"t0": 15, "t1": 18, "k": "move", "n": [1, 6]}, {"t0": 18, "t1": 21, "k": "stay", "n": [6]}, {"t0": 21, "t1": 24, "k": "move", "n": [6, 5]}, {"t0": 24, "t1": 34, "k": "stay", "n": [5]}, {"t0": 34, "t1": 39, "k": "move", "n": [5, 4]}, {"t0": 39, "t1": 44, "k": "stay", "n": [4]}, {"t0": 44, "t1": 45, "k": "move", "n": [4, 3]}, {"t0": 45, "t1": 48, "k": "stay", "n": [3]}, {"t0": 48, "t1": 50, "k": "move", "n": [3, 2]}, {"t0": 50, "t1": 55, "k": "stay", "n": [2]}, {"t0": 55, "t1": 57, "k": "move", "n": [2, 7]}, {"t0": 57, "t1": 60, "k": "stay", "n": [7]}, {"t0": 60, "t1": 61, "k": "move", "n": [7, 0]}]}, {"name": "G2", "end": 58, "segs": [{"t0": 0, "t1": 2, "k": "move", "n": [0, 4]}, {"t0": 2, "t1": 7, "k": "stay", "n": [4]}, {"t0": 7, "t1": 8, "k": "move", "n": [4, 3]}, {"t0": 8, "t1": 11, "k": "stay", "n": [3]}, {"t0": 11, "t1": 14, "k": "move", "n": [3, 7]}, {"t0": 14, "t1": 17, "k": "stay", "n": [7]}, {"t0": 17, "t1": 19, "k": "move", "n": [7, 2]}, {"t0": 19, "t1": 24, "k": "stay", "n": [2]}, {"t0": 24, "t1": 26, "k": "move", "n": [2, 1]}, {"t0": 26, "t1": 36, "k": "stay", "n": [1]}, {"t0": 36, "t1": 39, "k": "move", "n": [1, 6]}, {"t0": 39, "t1": 42, "k": "stay", "n": [6]}, {"t0": 42, "t1": 45, "k": "move", "n": [6, 5]}, {"t0": 45, "t1": 55, "k": "stay", "n": [5]}, {"t0": 55, "t1": 58, "k": "move", "n": [5, 0]}]}, {"name": "G3", "end": 61, "segs": [{"t0": 0, "t1": 2, "k": "move", "n": [0, 7, 6]}, {"t0": 2, "t1": 5, "k": "stay", "n": [6]}, {"t0": 5, "t1": 6, "k": "move", "n": [6, 7]}, {"t0": 6, "t1": 9, "k": "stay", "n": [7]}, {"t0": 9, "t1": 13, "k": "move", "n": [7, 0, 5]}, {"t0": 13, "t1": 23, "k": "stay", "n": [5]}, {"t0": 23, "t1": 28, "k": "move", "n": [5, 4]}, {"t0": 28, "t1": 33, "k": "stay", "n": [4]}, {"t0": 33, "t1": 34, "k": "move", "n": [4, 3]}, {"t0": 34, "t1": 37, "k": "stay", "n": [3]}, {"t0": 37, "t1": 39, "k": "move", "n": [3, 2]}, {"t0": 39, "t1": 44, "k": "stay", "n": [2]}, {"t0": 44, "t1": 46, "k": "move", "n": [2, 1]}, {"t0": 46, "t1": 56, "k": "stay", "n": [1]}, {"t0": 56, "t1": 61, "k": "move", "n": [1, 7, 0]}]}, {"name": "G4", "end": 60, "segs": [{"t0": 0, "t1": 1, "k": "wait", "n": [0]}, {"t0": 1, "t1": 2, "k": "move", "n": [0, 7]}, {"t0": 2, "t1": 5, "k": "stay", "n": [7]}, {"t0": 5, "t1": 6, "k": "wait", "n": [7]}, {"t0": 6, "t1": 8, "k": "move", "n": [7, 2]}, {"t0": 8, "t1": 13, "k": "stay", "n": [2]}, {"t0": 13, "t1": 15, "k": "move", "n": [2, 1]}, {"t0": 15, "t1": 25, "k": "stay", "n": [1]}, {"t0": 25, "t1": 28, "k": "move", "n": [1, 6]}, {"t0": 28, "t1": 31, "k": "stay", "n": [6]}, {"t0": 31, "t1": 34, "k": "move", "n": [6, 5]}, {"t0": 34, "t1": 44, "k": "stay", "n": [5]}, {"t0": 44, "t1": 49, "k": "move", "n": [5, 3]}, {"t0": 49, "t1": 52, "k": "stay", "n": [3]}, {"t0": 52, "t1": 53, "k": "move", "n": [3, 4]}, {"t0": 53, "t1": 58, "k": "stay", "n": [4]}, {"t0": 58, "t1": 60, "k": "move", "n": [4, 0]}]}, {"name": "G5", "end": 57, "segs": [{"t0": 0, "t1": 3, "k": "move", "n": [0, 5]}, {"t0": 3, "t1": 13, "k": "stay", "n": [5]}, {"t0": 13, "t1": 18, "k": "move", "n": [5, 4]}, {"t0": 18, "t1": 23, "k": "stay", "n": [4]}, {"t0": 23, "t1": 24, "k": "move", "n": [4, 3]}, {"t0": 24, "t1": 27, "k": "stay", "n": [3]}, {"t0": 27, "t1": 29, "k": "move", "n": [3, 2]}, {"t0": 29, "t1": 34, "k": "stay", "n": [2]}, {"t0": 34, "t1": 36, "k": "move", "n": [2, 1]}, {"t0": 36, "t1": 46, "k": "stay", "n": [1]}, {"t0": 46, "t1": 49, "k": "move", "n": [1, 6]}, {"t0": 49, "t1": 52, "k": "stay", "n": [6]}, {"t0": 52, "t1": 53, "k": "move", "n": [6, 7]}, {"t0": 53, "t1": 56, "k": "stay", "n": [7]}, {"t0": 56, "t1": 57, "k": "move", "n": [7, 0]}]}], "T": 61};
+const POS = {0:[600,655],1:[330,175],2:[290,480],3:[455,645],4:[470,742],5:[812,530],6:[555,430],7:[565,530]};
+const COLORS=["var(--g1)","var(--g2)","var(--g3)","var(--g4)","var(--g5)"];
+const HEX=["#2a78d6","#008300","#d55181","#c98500","#199e70"];
+const svgNS="http://www.w3.org/2000/svg";
+const spotsG=document.getElementById("spots"), dotsG=document.getElementById("dots"), routesG=document.getElementById("routes");
+
+const drawn=new Set();
+for(const g of DATA.groups)for(const s of g.segs)if(s.k==="move")for(let i=0;i<s.n.length-1;i++){
+  const key=[Math.min(s.n[i],s.n[i+1]),Math.max(s.n[i],s.n[i+1])].join("-");
+  if(drawn.has(key))continue;drawn.add(key);
+  const p=document.createElementNS(svgNS,"line");
+  const a=POS[s.n[i]],b=POS[s.n[i+1]];
+  p.setAttribute("x1",a[0]);p.setAttribute("y1",a[1]);p.setAttribute("x2",b[0]);p.setAttribute("y2",b[1]);
+  p.setAttribute("class","route");routesG.appendChild(p);
+}
+for(const [k,p] of Object.entries(POS)){
+  const c=document.createElementNS(svgNS,"circle");
+  c.setAttribute("cx",p[0]);c.setAttribute("cy",p[1]);c.setAttribute("r",k==="0"?9:7);
+  c.setAttribute("class","spot");if(k==="0")c.setAttribute("stroke-width","3");
+  spotsG.appendChild(c);
+  const t=document.createElementNS(svgNS,"text");
+  t.setAttribute("x",p[0]+12);t.setAttribute("y",p[1]+4);t.setAttribute("class","spotlbl");
+  t.textContent=DATA.names[k];spotsG.appendChild(t);
+}
+const dots=[],labels=[];
+DATA.groups.forEach((g,i)=>{
+  const c=document.createElementNS(svgNS,"circle");
+  c.setAttribute("r",11);c.setAttribute("fill",HEX[i]);c.setAttribute("stroke","#fff");c.setAttribute("stroke-width",2.5);
+  dotsG.appendChild(c);dots.push(c);
+  const t=document.createElementNS(svgNS,"text");
+  t.setAttribute("fill","#fff");t.setAttribute("font-size","10");t.setAttribute("font-weight","700");
+  t.setAttribute("text-anchor","middle");t.textContent=g.name;dotsG.appendChild(t);labels.push(t);
+});
+const statusEl=document.getElementById("status");
+const cards=DATA.groups.map((g,i)=>{
+  const d=document.createElement("div");d.className="card";
+  d.innerHTML=`<b><span class="dotchip" style="background:${HEX[i]}"></span>${g.name}</b><span></span>`;
+  statusEl.appendChild(d);return d.querySelector("span");
+});
+function posAt(g,t){
+  const segs=DATA.groups[g].segs;
+  if(t>=DATA.groups[g].end)return{p:POS[0],txt:"4Aに帰着済み",stay:false};
+  for(const s of segs){
+    if(t>=s.t0&&t<=s.t1){
+      if(s.k!=="move"){
+        const nm=DATA.names[s.n[0]];
+        return{p:POS[s.n[0]],txt:(s.k==="stay"?nm+" 見学中":nm+"で待機"),stay:s.k==="stay",wait:s.k==="wait"};
+      }
+      let total=0;const lens=[];
+      for(let i=0;i<s.n.length-1;i++){const w=DATA.edgeT[s.n[i]][s.n[i+1]];lens.push(w);total+=w;}
+      let f=(t-s.t0)/(s.t1-s.t0)*total;
+      for(let i=0;i<lens.length;i++){
+        if(f<=lens[i]||i===lens.length-1){
+          const a=POS[s.n[i]],b=POS[s.n[i+1]],r=Math.min(1,f/lens[i]);
+          return{p:[a[0]+(b[0]-a[0])*r,a[1]+(b[1]-a[1])*r],txt:DATA.names[s.n[s.n.length-1]]+"へ移動中",stay:false};
+        }
+        f-=lens[i];
+      }
+    }
+  }
+  return{p:POS[0],txt:"4Aで待機",stay:false};
+}
+const slider=document.getElementById("time"),clk=document.getElementById("clk");
+function offsetFor(g,t,p){
+  let dx=0,dy=0,count=0;
+  for(let o=0;o<DATA.groups.length;o++){
+    if(o===g)continue;
+    const q=posAt(o,t).p;
+    if(Math.abs(q[0]-p[0])<1&&Math.abs(q[1]-p[1])<1&&o<g)count++;
+  }
+  return[count*16,-count*6];
+}
+function render(){
+  const t=parseFloat(slider.value);clk.textContent=t.toFixed(1);
+  DATA.groups.forEach((g,i)=>{
+    const r=posAt(i,t);const[ox,oy]=offsetFor(i,t,r.p);
+    const x=r.p[0]+ox,y=r.p[1]+oy;
+    dots[i].setAttribute("cx",x);dots[i].setAttribute("cy",y);
+    dots[i].setAttribute("opacity",r.wait?(Math.sin(Date.now()/200)*0.25+0.7):1);
+    labels[i].setAttribute("x",x);labels[i].setAttribute("y",y+3.5);
+    cards[i].textContent=r.txt;
+  });
+}
+slider.addEventListener("input",render);
+let playing=false,last=null;
+const btn=document.getElementById("play"),spd=document.getElementById("spd");
+function tick(ts){
+  if(!playing)return;
+  if(last!==null){
+    let t=parseFloat(slider.value)+(ts-last)/1000*parseFloat(spd.value);
+    if(t>=61){t=62;playing=false;btn.textContent="▶ 再生";}
+    slider.value=t;render();
+  }
+  last=ts;requestAnimationFrame(tick);
+}
+btn.addEventListener("click",()=>{
+  if(!playing){
+    if(parseFloat(slider.value)>=62)slider.value=0;
+    playing=true;last=null;btn.textContent="⏸ 一時停止";requestAnimationFrame(tick);
+  }else{playing=false;btn.textContent="▶ 再生";}
+});
+render();
+</script>
+</body>
+</html>
