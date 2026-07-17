@@ -7,7 +7,6 @@
 <style>
 :root{
   --paper:#f7f6f2; --ink:#22211e; --sub:#6d6b64; --line:#d9d7cf;
-  --g1:#2a78d6; --g2:#008300; --g3:#d55181; --g4:#c98500; --g5:#199e70;
 }
 *{box-sizing:border-box;margin:0;padding:0}
 body{background:var(--paper);color:var(--ink);font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;padding:20px 16px 40px;max-width:960px;margin:0 auto}
@@ -18,7 +17,7 @@ svg{display:block;width:100%;height:auto}
 .bld{fill:#eceae3;stroke:#b8b5aa;stroke-width:1.5}
 .bldlbl{fill:#8a877d;font-size:13px}
 .spot{fill:#fff;stroke:#55524a;stroke-width:1.5}
-.spotlbl{fill:#33312c;font-size:13px;font-weight:600}
+.spotlbl{fill:#33312c;font-size:13px;font-weight:600;paint-order:stroke;stroke:#fff;stroke-width:3px}
 .route{stroke:#c9c6bb;stroke-width:2;stroke-dasharray:3 5;fill:none}
 .controls{display:flex;align-items:center;gap:12px;margin:14px 0 6px;flex-wrap:wrap}
 button{font:inherit;border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px 16px;cursor:pointer;font-weight:600}
@@ -37,7 +36,7 @@ input[type=range]{flex:1;min-width:200px;accent-color:#55524a}
 </head>
 <body>
 <h1>天樹祭 キャンパスツアー ライブマップ</h1>
-<p class="sub">5グループ同時出発 / 全体61分 / どのスポットも同時に1グループのみ (CP-SAT最適化)</p>
+<p class="sub">5グループ同時出発 / 全体58.5分 (実測値ベース) / どのスポットも同時に1グループのみ (CP-SAT最適化)</p>
 <div class="mapwrap">
 <svg viewBox="0 0 900 800" role="img" aria-label="キャンパス地図上のグループ位置アニメーション">
   <g transform="rotate(-18 350 180)">
@@ -50,7 +49,7 @@ input[type=range]{flex:1;min-width:200px;accent-color:#55524a}
   <rect class="bld" x="500" y="360" width="180" height="240" rx="4"/><text class="bldlbl" x="545" y="470">中央(C)棟</text>
   <circle class="bld" cx="590" cy="330" r="42"/>
   <rect class="bld" x="770" y="420" width="90" height="180" rx="4"/><text class="bldlbl" x="782" y="415">東(E)棟</text>
-  <rect class="bld" x="380" y="620" width="400" height="130" rx="4"/><text class="bldlbl" x="660" y="700">南(S)棟</text>
+  <rect class="bld" x="380" y="620" width="400" height="130" rx="4"/><text class="bldlbl" x="700" y="712">南(S)棟</text>
   <rect class="bld" x="60" y="640" width="180" height="90" rx="4"/><text class="bldlbl" x="100" y="690">体育館</text>
   <g id="routes"></g>
   <g id="spots"></g>
@@ -59,27 +58,52 @@ input[type=range]{flex:1;min-width:200px;accent-color:#55524a}
 </div>
 <div class="controls">
   <button id="play">▶ 再生</button>
-  <input type="range" id="time" min="0" max="61" step="0.05" value="0">
+  <input type="range" id="time" min="0" max="58.5" step="0.05" value="0">
   <div class="clock"><span id="clk">0.0</span> 分<small>スタートから</small></div>
   <label class="speed">速度 <select id="spd"><option value="1">1x</option><option value="2" selected>2x</option><option value="5">5x</option><option value="10">10x</option></select></label>
 </div>
 <div class="status" id="status"></div>
 <p class="note">●=滞在中, ○(点滅)=待機中, 移動中は経路上を進みます. 破線は主要動線. 実測値が変わったらスケジュールJSONを差し替えるだけで更新できます.</p>
 <script>
-const DATA = {"names": ["4A", "寮", "西棟", "教育実験室", "工房", "CR", "織機", "iPlaza"], "edgeT": [[0, 5, 3, 3, 2, 3, 2, 1], [5, 0, 2, 4, 5, 5, 3, 4], [3, 2, 0, 2, 3, 5, 2, 2], [3, 4, 2, 0, 1, 5, 4, 3], [2, 5, 3, 1, 0, 5, 4, 3], [3, 5, 5, 5, 5, 0, 3, 4], [2, 3, 2, 4, 4, 3, 0, 1], [1, 4, 2, 3, 3, 4, 1, 0]], "groups": [{"name": "G1", "end": 61, "segs": [{"t0": 0, "t1": 5, "k": "move", "n": [0, 7, 1]}, {"t0": 5, "t1": 15, "k": "stay", "n": [1]}, {"t0": 15, "t1": 18, "k": "move", "n": [1, 6]}, {"t0": 18, "t1": 21, "k": "stay", "n": [6]}, {"t0": 21, "t1": 24, "k": "move", "n": [6, 5]}, {"t0": 24, "t1": 34, "k": "stay", "n": [5]}, {"t0": 34, "t1": 39, "k": "move", "n": [5, 4]}, {"t0": 39, "t1": 44, "k": "stay", "n": [4]}, {"t0": 44, "t1": 45, "k": "move", "n": [4, 3]}, {"t0": 45, "t1": 48, "k": "stay", "n": [3]}, {"t0": 48, "t1": 50, "k": "move", "n": [3, 2]}, {"t0": 50, "t1": 55, "k": "stay", "n": [2]}, {"t0": 55, "t1": 57, "k": "move", "n": [2, 7]}, {"t0": 57, "t1": 60, "k": "stay", "n": [7]}, {"t0": 60, "t1": 61, "k": "move", "n": [7, 0]}]}, {"name": "G2", "end": 58, "segs": [{"t0": 0, "t1": 2, "k": "move", "n": [0, 4]}, {"t0": 2, "t1": 7, "k": "stay", "n": [4]}, {"t0": 7, "t1": 8, "k": "move", "n": [4, 3]}, {"t0": 8, "t1": 11, "k": "stay", "n": [3]}, {"t0": 11, "t1": 14, "k": "move", "n": [3, 7]}, {"t0": 14, "t1": 17, "k": "stay", "n": [7]}, {"t0": 17, "t1": 19, "k": "move", "n": [7, 2]}, {"t0": 19, "t1": 24, "k": "stay", "n": [2]}, {"t0": 24, "t1": 26, "k": "move", "n": [2, 1]}, {"t0": 26, "t1": 36, "k": "stay", "n": [1]}, {"t0": 36, "t1": 39, "k": "move", "n": [1, 6]}, {"t0": 39, "t1": 42, "k": "stay", "n": [6]}, {"t0": 42, "t1": 45, "k": "move", "n": [6, 5]}, {"t0": 45, "t1": 55, "k": "stay", "n": [5]}, {"t0": 55, "t1": 58, "k": "move", "n": [5, 0]}]}, {"name": "G3", "end": 61, "segs": [{"t0": 0, "t1": 2, "k": "move", "n": [0, 7, 6]}, {"t0": 2, "t1": 5, "k": "stay", "n": [6]}, {"t0": 5, "t1": 6, "k": "move", "n": [6, 7]}, {"t0": 6, "t1": 9, "k": "stay", "n": [7]}, {"t0": 9, "t1": 13, "k": "move", "n": [7, 0, 5]}, {"t0": 13, "t1": 23, "k": "stay", "n": [5]}, {"t0": 23, "t1": 28, "k": "move", "n": [5, 4]}, {"t0": 28, "t1": 33, "k": "stay", "n": [4]}, {"t0": 33, "t1": 34, "k": "move", "n": [4, 3]}, {"t0": 34, "t1": 37, "k": "stay", "n": [3]}, {"t0": 37, "t1": 39, "k": "move", "n": [3, 2]}, {"t0": 39, "t1": 44, "k": "stay", "n": [2]}, {"t0": 44, "t1": 46, "k": "move", "n": [2, 1]}, {"t0": 46, "t1": 56, "k": "stay", "n": [1]}, {"t0": 56, "t1": 61, "k": "move", "n": [1, 7, 0]}]}, {"name": "G4", "end": 60, "segs": [{"t0": 0, "t1": 1, "k": "wait", "n": [0]}, {"t0": 1, "t1": 2, "k": "move", "n": [0, 7]}, {"t0": 2, "t1": 5, "k": "stay", "n": [7]}, {"t0": 5, "t1": 6, "k": "wait", "n": [7]}, {"t0": 6, "t1": 8, "k": "move", "n": [7, 2]}, {"t0": 8, "t1": 13, "k": "stay", "n": [2]}, {"t0": 13, "t1": 15, "k": "move", "n": [2, 1]}, {"t0": 15, "t1": 25, "k": "stay", "n": [1]}, {"t0": 25, "t1": 28, "k": "move", "n": [1, 6]}, {"t0": 28, "t1": 31, "k": "stay", "n": [6]}, {"t0": 31, "t1": 34, "k": "move", "n": [6, 5]}, {"t0": 34, "t1": 44, "k": "stay", "n": [5]}, {"t0": 44, "t1": 49, "k": "move", "n": [5, 3]}, {"t0": 49, "t1": 52, "k": "stay", "n": [3]}, {"t0": 52, "t1": 53, "k": "move", "n": [3, 4]}, {"t0": 53, "t1": 58, "k": "stay", "n": [4]}, {"t0": 58, "t1": 60, "k": "move", "n": [4, 0]}]}, {"name": "G5", "end": 57, "segs": [{"t0": 0, "t1": 3, "k": "move", "n": [0, 5]}, {"t0": 3, "t1": 13, "k": "stay", "n": [5]}, {"t0": 13, "t1": 18, "k": "move", "n": [5, 4]}, {"t0": 18, "t1": 23, "k": "stay", "n": [4]}, {"t0": 23, "t1": 24, "k": "move", "n": [4, 3]}, {"t0": 24, "t1": 27, "k": "stay", "n": [3]}, {"t0": 27, "t1": 29, "k": "move", "n": [3, 2]}, {"t0": 29, "t1": 34, "k": "stay", "n": [2]}, {"t0": 34, "t1": 36, "k": "move", "n": [2, 1]}, {"t0": 36, "t1": 46, "k": "stay", "n": [1]}, {"t0": 46, "t1": 49, "k": "move", "n": [1, 6]}, {"t0": 49, "t1": 52, "k": "stay", "n": [6]}, {"t0": 52, "t1": 53, "k": "move", "n": [6, 7]}, {"t0": 53, "t1": 56, "k": "stay", "n": [7]}, {"t0": 56, "t1": 57, "k": "move", "n": [7, 0]}]}], "T": 61};
+const DATA = {"names": ["4A", "寮", "西棟", "教育実験室", "工房", "CR", "織機", "iPlaza"], "edgeT": [[0.0, 3.5, 3.0, 3.5, 2.5, 2.5, 2.0, 1.0], [3.5, 0.0, 2.5, 4.5, 5.5, 4.0, 2.0, 2.5], [3.0, 2.5, 0.0, 2.0, 3.0, 4.0, 2.0, 2.0], [3.5, 4.5, 2.0, 0.0, 1.0, 3.0, 3.5, 3.0], [2.5, 5.5, 3.0, 1.0, 0.0, 4.0, 3.5, 3.5], [2.5, 4.0, 4.0, 3.0, 4.0, 0.0, 2.0, 3.0], [2.0, 2.0, 2.0, 3.5, 3.5, 2.0, 0.0, 1.0], [1.0, 2.5, 2.0, 3.0, 3.5, 3.0, 1.0, 0.0]], "groups": [{"name": "G1", "end": 55.0, "segs": [{"t0": 0.0, "t1": 2.5, "k": "move", "n": [0, 5]}, {"t0": 2.5, "t1": 12.5, "k": "stay", "n": [5]}, {"t0": 12.5, "t1": 14.5, "k": "move", "n": [5, 6]}, {"t0": 14.5, "t1": 17.5, "k": "stay", "n": [6]}, {"t0": 17.5, "t1": 18.5, "k": "move", "n": [6, 7]}, {"t0": 18.5, "t1": 21.5, "k": "stay", "n": [7]}, {"t0": 21.5, "t1": 24.0, "k": "move", "n": [7, 1]}, {"t0": 24.0, "t1": 34.0, "k": "stay", "n": [1]}, {"t0": 34.0, "t1": 36.5, "k": "move", "n": [1, 2]}, {"t0": 36.5, "t1": 41.5, "k": "stay", "n": [2]}, {"t0": 41.5, "t1": 43.5, "k": "move", "n": [2, 3]}, {"t0": 43.5, "t1": 46.5, "k": "stay", "n": [3]}, {"t0": 46.5, "t1": 47.5, "k": "move", "n": [3, 4]}, {"t0": 47.5, "t1": 52.5, "k": "stay", "n": [4]}, {"t0": 52.5, "t1": 55.0, "k": "move", "n": [4, 0]}]}, {"name": "G2", "end": 57.5, "segs": [{"t0": 0.0, "t1": 1.0, "k": "move", "n": [0, 7]}, {"t0": 1.0, "t1": 4.0, "k": "stay", "n": [7]}, {"t0": 4.0, "t1": 6.0, "k": "move", "n": [7, 2]}, {"t0": 6.0, "t1": 11.0, "k": "stay", "n": [2]}, {"t0": 11.0, "t1": 13.0, "k": "move", "n": [2, 3]}, {"t0": 13.0, "t1": 16.0, "k": "stay", "n": [3]}, {"t0": 16.0, "t1": 17.0, "k": "move", "n": [3, 4]}, {"t0": 17.0, "t1": 22.0, "k": "stay", "n": [4]}, {"t0": 22.0, "t1": 26.0, "k": "move", "n": [4, 5]}, {"t0": 26.0, "t1": 36.0, "k": "stay", "n": [5]}, {"t0": 36.0, "t1": 38.0, "k": "move", "n": [5, 6]}, {"t0": 38.0, "t1": 41.0, "k": "stay", "n": [6]}, {"t0": 41.0, "t1": 42.0, "k": "wait", "n": [6]}, {"t0": 42.0, "t1": 44.0, "k": "move", "n": [6, 1]}, {"t0": 44.0, "t1": 54.0, "k": "stay", "n": [1]}, {"t0": 54.0, "t1": 57.5, "k": "move", "n": [1, 7, 0]}]}, {"name": "G3", "end": 58.5, "segs": [{"t0": 0.0, "t1": 2.5, "k": "move", "n": [0, 4]}, {"t0": 2.5, "t1": 7.5, "k": "stay", "n": [4]}, {"t0": 7.5, "t1": 8.5, "k": "move", "n": [4, 3]}, {"t0": 8.5, "t1": 11.5, "k": "stay", "n": [3]}, {"t0": 11.5, "t1": 14.5, "k": "move", "n": [3, 5]}, {"t0": 14.5, "t1": 24.5, "k": "stay", "n": [5]}, {"t0": 24.5, "t1": 27.5, "k": "move", "n": [5, 6, 7]}, {"t0": 27.5, "t1": 30.5, "k": "stay", "n": [7]}, {"t0": 30.5, "t1": 31.5, "k": "wait", "n": [7]}, {"t0": 31.5, "t1": 34.0, "k": "move", "n": [7, 1]}, {"t0": 34.0, "t1": 44.0, "k": "stay", "n": [1]}, {"t0": 44.0, "t1": 46.5, "k": "move", "n": [1, 2]}, {"t0": 46.5, "t1": 51.5, "k": "stay", "n": [2]}, {"t0": 51.5, "t1": 53.5, "k": "move", "n": [2, 6]}, {"t0": 53.5, "t1": 56.5, "k": "stay", "n": [6]}, {"t0": 56.5, "t1": 58.5, "k": "move", "n": [6, 7, 0]}]}, {"name": "G4", "end": 58.5, "segs": [{"t0": 0.0, "t1": 0.5, "k": "wait", "n": [0]}, {"t0": 0.5, "t1": 2.5, "k": "move", "n": [0, 7, 6]}, {"t0": 2.5, "t1": 5.5, "k": "stay", "n": [6]}, {"t0": 5.5, "t1": 6.5, "k": "move", "n": [6, 7]}, {"t0": 6.5, "t1": 9.5, "k": "stay", "n": [7]}, {"t0": 9.5, "t1": 11.0, "k": "wait", "n": [7]}, {"t0": 11.0, "t1": 13.5, "k": "move", "n": [7, 1]}, {"t0": 13.5, "t1": 23.5, "k": "stay", "n": [1]}, {"t0": 23.5, "t1": 26.0, "k": "move", "n": [1, 2]}, {"t0": 26.0, "t1": 31.0, "k": "stay", "n": [2]}, {"t0": 31.0, "t1": 34.0, "k": "move", "n": [2, 4]}, {"t0": 34.0, "t1": 39.0, "k": "stay", "n": [4]}, {"t0": 39.0, "t1": 40.0, "k": "move", "n": [4, 3]}, {"t0": 40.0, "t1": 43.0, "k": "stay", "n": [3]}, {"t0": 43.0, "t1": 46.0, "k": "move", "n": [3, 5]}, {"t0": 46.0, "t1": 56.0, "k": "stay", "n": [5]}, {"t0": 56.0, "t1": 58.5, "k": "move", "n": [5, 0]}]}, {"name": "G5", "end": 56.0, "segs": [{"t0": 0.0, "t1": 3.5, "k": "move", "n": [0, 7, 1]}, {"t0": 3.5, "t1": 13.5, "k": "stay", "n": [1]}, {"t0": 13.5, "t1": 16.0, "k": "move", "n": [1, 2]}, {"t0": 16.0, "t1": 21.0, "k": "stay", "n": [2]}, {"t0": 21.0, "t1": 23.0, "k": "move", "n": [2, 3]}, {"t0": 23.0, "t1": 26.0, "k": "stay", "n": [3]}, {"t0": 26.0, "t1": 27.0, "k": "move", "n": [3, 4]}, {"t0": 27.0, "t1": 32.0, "k": "stay", "n": [4]}, {"t0": 32.0, "t1": 36.0, "k": "move", "n": [4, 5]}, {"t0": 36.0, "t1": 46.0, "k": "stay", "n": [5]}, {"t0": 46.0, "t1": 48.0, "k": "move", "n": [5, 6]}, {"t0": 48.0, "t1": 51.0, "k": "stay", "n": [6]}, {"t0": 51.0, "t1": 52.0, "k": "move", "n": [6, 7]}, {"t0": 52.0, "t1": 55.0, "k": "stay", "n": [7]}, {"t0": 55.0, "t1": 56.0, "k": "move", "n": [7, 0]}]}], "T": 58.5};
+const TMAX = 58.5;
 const POS = {0:[600,655],1:[330,175],2:[290,480],3:[455,645],4:[470,742],5:[812,530],6:[555,430],7:[565,530]};
-const COLORS=["var(--g1)","var(--g2)","var(--g3)","var(--g4)","var(--g5)"];
+// 見やすさ用の描画ウェイポイント (実時間には影響しない): 工房-CRは4Aを避けて南側を回す
+const BENDS = {"4-5":[[672,712]]};
 const HEX=["#2a78d6","#008300","#d55181","#c98500","#199e70"];
 const svgNS="http://www.w3.org/2000/svg";
 const spotsG=document.getElementById("spots"), dotsG=document.getElementById("dots"), routesG=document.getElementById("routes");
 
+function edgePts(a,b){
+  const k1=a+"-"+b, k2=b+"-"+a;
+  if(BENDS[k1]) return [POS[a],...BENDS[k1],POS[b]];
+  if(BENDS[k2]) return [POS[a],...BENDS[k2].slice().reverse(),POS[b]];
+  return [POS[a],POS[b]];
+}
+function polyLen(pts){
+  let L=0;
+  for(let i=0;i<pts.length-1;i++)L+=Math.hypot(pts[i+1][0]-pts[i][0],pts[i+1][1]-pts[i][1]);
+  return L;
+}
+function polyAt(pts,f){ // f in [0,1] along geometric length
+  const L=polyLen(pts); let target=f*L;
+  for(let i=0;i<pts.length-1;i++){
+    const seg=Math.hypot(pts[i+1][0]-pts[i][0],pts[i+1][1]-pts[i][1]);
+    if(target<=seg||i===pts.length-2){
+      const r=Math.min(1,target/seg);
+      return [pts[i][0]+(pts[i+1][0]-pts[i][0])*r, pts[i][1]+(pts[i+1][1]-pts[i][1])*r];
+    }
+    target-=seg;
+  }
+  return pts[pts.length-1];
+}
 const drawn=new Set();
 for(const g of DATA.groups)for(const s of g.segs)if(s.k==="move")for(let i=0;i<s.n.length-1;i++){
   const key=[Math.min(s.n[i],s.n[i+1]),Math.max(s.n[i],s.n[i+1])].join("-");
   if(drawn.has(key))continue;drawn.add(key);
-  const p=document.createElementNS(svgNS,"line");
-  const a=POS[s.n[i]],b=POS[s.n[i+1]];
-  p.setAttribute("x1",a[0]);p.setAttribute("y1",a[1]);p.setAttribute("x2",b[0]);p.setAttribute("y2",b[1]);
+  const pts=edgePts(s.n[i],s.n[i+1]);
+  const p=document.createElementNS(svgNS,"polyline");
+  p.setAttribute("points",pts.map(q=>q.join(",")).join(" "));
   p.setAttribute("class","route");routesG.appendChild(p);
 }
 for(const [k,p] of Object.entries(POS)){
@@ -120,8 +144,8 @@ function posAt(g,t){
       let f=(t-s.t0)/(s.t1-s.t0)*total;
       for(let i=0;i<lens.length;i++){
         if(f<=lens[i]||i===lens.length-1){
-          const a=POS[s.n[i]],b=POS[s.n[i+1]],r=Math.min(1,f/lens[i]);
-          return{p:[a[0]+(b[0]-a[0])*r,a[1]+(b[1]-a[1])*r],txt:DATA.names[s.n[s.n.length-1]]+"へ移動中",stay:false};
+          const r=Math.min(1,f/lens[i]);
+          return{p:polyAt(edgePts(s.n[i],s.n[i+1]),r),txt:DATA.names[s.n[s.n.length-1]]+"へ移動中",stay:false};
         }
         f-=lens[i];
       }
@@ -131,11 +155,10 @@ function posAt(g,t){
 }
 const slider=document.getElementById("time"),clk=document.getElementById("clk");
 function offsetFor(g,t,p){
-  let dx=0,dy=0,count=0;
-  for(let o=0;o<DATA.groups.length;o++){
-    if(o===g)continue;
+  let count=0;
+  for(let o=0;o<g;o++){
     const q=posAt(o,t).p;
-    if(Math.abs(q[0]-p[0])<1&&Math.abs(q[1]-p[1])<1&&o<g)count++;
+    if(Math.abs(q[0]-p[0])<1&&Math.abs(q[1]-p[1])<1)count++;
   }
   return[count*16,-count*6];
 }
@@ -157,14 +180,14 @@ function tick(ts){
   if(!playing)return;
   if(last!==null){
     let t=parseFloat(slider.value)+(ts-last)/1000*parseFloat(spd.value);
-    if(t>=61){t=62;playing=false;btn.textContent="▶ 再生";}
+    if(t>=TMAX){t=TMAX;playing=false;btn.textContent="▶ 再生";}
     slider.value=t;render();
   }
   last=ts;requestAnimationFrame(tick);
 }
 btn.addEventListener("click",()=>{
   if(!playing){
-    if(parseFloat(slider.value)>=62)slider.value=0;
+    if(parseFloat(slider.value)>=TMAX)slider.value=0;
     playing=true;last=null;btn.textContent="⏸ 一時停止";requestAnimationFrame(tick);
   }else{playing=false;btn.textContent="▶ 再生";}
 });
