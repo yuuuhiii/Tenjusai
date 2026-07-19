@@ -6,88 +6,96 @@
 <title>天樹祭キャンパスツアー ライブマップ</title>
 <style>
 :root {
-  /* モダンなダークテーマのカラーパレット */
-  --bg: #0f172a;
-  --card-bg: #1e293b;
-  --text-main: #f8fafc;
-  --text-sub: #94a3b8;
-  --line: #334155;
-  --bld-fill: #1e293b;
-  --bld-stroke: #334155;
+  /* クリーンでシャープなモダンライトテーマ */
+  --bg: #f3f4f6;
+  --card-bg: #ffffff;
+  --text-main: #111827;
+  --text-sub: #6b7280;
+  --line: #e5e7eb;
+  
+  /* マップ要素のカラー */
+  --bld-fill: #f8fafc;
+  --bld-stroke: #cbd5e1;
   --bld-text: #64748b;
-  --spot-fill: #0f172a;
-  --spot-stroke: #475569;
-  --spot-text: #e2e8f0;
-  --accent: #3b82f6;
-  --accent-hover: #2563eb;
+  --spot-fill: #ffffff;
+  --spot-stroke: #4b5563;
+  --spot-text: #1f2937;
+  
+  /* UIアクセント */
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
 }
+
 * { box-sizing: border-box; margin: 0; padding: 0; }
+
 body {
   background: var(--bg);
   color: var(--text-main);
-  font-family: "Inter", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+  font-family: "Inter", -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
   padding: 30px 20px 50px;
   max-width: 960px;
   margin: 0 auto;
 }
+
 h1 {
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
   letter-spacing: 0.02em;
-  /* タイトルにグラデーションを追加してリッチに */
-  background: linear-gradient(90deg, #60a5fa, #a78bfa);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
+  color: #111827;
   margin-bottom: 8px;
 }
+
 p.sub {
   font-size: 13px;
   color: var(--text-sub);
   margin-bottom: 24px;
   line-height: 1.5;
 }
+
 .mapwrap {
   background: var(--card-bg);
   border: 1px solid var(--line);
-  border-radius: 16px;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  border-radius: 12px;
+  box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -2px rgba(0, 0, 0, 0.05);
   overflow: hidden;
 }
+
 svg { display: block; width: 100%; height: auto; }
-.bld { fill: var(--bld-fill); stroke: var(--bld-stroke); stroke-width: 2; }
+
+.bld { fill: var(--bld-fill); stroke: var(--bld-stroke); stroke-width: 1.5; }
 .bldlbl { fill: var(--bld-text); font-size: 14px; font-weight: 600; }
 .spot { fill: var(--spot-fill); stroke: var(--spot-stroke); stroke-width: 2; }
-.spotlbl { fill: var(--spot-text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; }
-.route { stroke: var(--line); stroke-width: 2; stroke-dasharray: 4 6; fill: none; }
+.spotlbl { fill: var(--spot-text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: rgba(255,255,255,0.9); stroke-width: 4px; }
+.route { stroke: #d1d5db; stroke-width: 2; stroke-dasharray: 4 4; fill: none; }
 
 .controls {
   display: flex;
   align-items: center;
   gap: 16px;
-  margin: 24px 0 16px;
+  margin: 20px 0 16px;
   flex-wrap: wrap;
   background: var(--card-bg);
   padding: 16px 20px;
   border-radius: 12px;
   border: 1px solid var(--line);
+  box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.05);
 }
+
 button {
   font: inherit;
   background: var(--accent);
   color: #fff;
   border: none;
-  border-radius: 8px;
-  padding: 10px 20px;
+  border-radius: 6px;
+  padding: 8px 20px;
   cursor: pointer;
   font-weight: 600;
-  transition: all 0.2s;
-  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+  font-size: 14px;
+  transition: background-color 0.2s;
 }
-button:hover {
-  background: var(--accent-hover);
-  transform: translateY(-1px);
-}
-/* スライダーをカスタムしてモダンに */
+
+button:hover { background: var(--accent-hover); }
+
 input[type=range] {
   -webkit-appearance: none;
   background: transparent;
@@ -97,27 +105,31 @@ input[type=range] {
 input[type=range]::-webkit-slider-runnable-track {
   width: 100%;
   height: 6px;
-  background: var(--line);
+  background: #d1d5db;
   border-radius: 3px;
 }
 input[type=range]::-webkit-slider-thumb {
   -webkit-appearance: none;
-  height: 16px;
-  width: 16px;
+  height: 18px;
+  width: 18px;
   border-radius: 50%;
   background: var(--accent);
-  margin-top: -5px;
+  margin-top: -6px;
   cursor: pointer;
-  box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+  border: 2px solid #fff;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.3);
 }
+
 .clock {
   font-variant-numeric: tabular-nums;
-  font-size: 24px;
+  font-size: 22px;
   font-weight: 700;
-  min-width: 110px;
+  min-width: 100px;
   line-height: 1.1;
   text-align: right;
+  color: #111827;
 }
+
 .clock small {
   font-size: 11px;
   color: var(--text-sub);
@@ -126,86 +138,96 @@ input[type=range]::-webkit-slider-thumb {
   text-align: right;
   margin-top: 2px;
 }
+
 .speed {
   font-size: 13px;
   color: var(--text-sub);
   display: flex;
   align-items: center;
   gap: 8px;
+  font-weight: 500;
 }
+
 select {
   font: inherit;
-  background: var(--bg);
+  background: #f9fafb;
   color: var(--text-main);
   border: 1px solid var(--line);
   border-radius: 6px;
   padding: 4px 8px;
   outline: none;
+  cursor: pointer;
 }
+
 .status {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
   gap: 12px;
   margin-top: 16px;
 }
-/* 表示が崩れていた文字部分のレイアウトを修正 */
+
 .card {
   background: var(--card-bg);
   border: 1px solid var(--line);
-  border-radius: 12px;
+  border-radius: 10px;
   padding: 12px 16px;
   display: flex;
   flex-direction: column;
   gap: 6px;
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
 }
+
 .card-header {
   display: flex;
   align-items: center;
   gap: 8px;
   font-size: 14px;
   font-weight: 700;
+  color: #111827;
 }
+
 .dotchip {
   width: 10px;
   height: 10px;
   border-radius: 50%;
   display: inline-block;
 }
+
 .card-body {
   font-size: 13px;
   color: var(--text-sub);
   line-height: 1.4;
+  font-weight: 500;
 }
+
 .note {
   font-size: 13px;
   color: var(--text-sub);
   margin-top: 24px;
   line-height: 1.6;
   padding: 16px;
-  background: rgba(30, 41, 59, 0.5);
+  background: #e5e7eb;
   border-radius: 8px;
-  border: 1px solid var(--line);
 }
 </style>
 </head>
 <body>
 <h1>天樹祭 キャンパスツアー ライブマップ</h1>
-<p class="sub">5グループ同時出発 / 全体60.5分</p>
+<p class="sub">5グループ同時出発 / 全体60.5分 </p>
 <div class="mapwrap">
 <svg viewBox="0 0 900 800" role="img" aria-label="キャンパス地図上のグループ位置アニメーション">
   <g transform="rotate(-18 350 180)">
-    <rect class="bld" x="120" y="120" width="460" height="60" rx="6"/>
-    <rect class="bld" x="140" y="200" width="440" height="55" rx="6"/>
+    <rect class="bld" x="120" y="120" width="460" height="60" rx="4"/>
+    <rect class="bld" x="140" y="200" width="440" height="55" rx="4"/>
   </g>
   <text class="bldlbl" x="180" y="150">久方寮</text>
-  <rect class="bld" x="560" y="220" width="300" height="80" rx="6"/><text class="bldlbl" x="680" y="265">北(N)棟</text>
-  <rect class="bld" x="200" y="380" width="180" height="200" rx="6"/><text class="bldlbl" x="235" y="470">西(W)棟</text>
-  <rect class="bld" x="500" y="360" width="180" height="240" rx="6"/><text class="bldlbl" x="545" y="470">中央(C)棟</text>
+  <rect class="bld" x="560" y="220" width="300" height="80" rx="4"/><text class="bldlbl" x="680" y="265">北(N)棟</text>
+  <rect class="bld" x="200" y="380" width="180" height="200" rx="4"/><text class="bldlbl" x="235" y="470">西(W)棟</text>
+  <rect class="bld" x="500" y="360" width="180" height="240" rx="4"/><text class="bldlbl" x="545" y="470">中央(C)棟</text>
   <circle class="bld" cx="590" cy="330" r="42"/>
-  <rect class="bld" x="770" y="420" width="90" height="180" rx="6"/><text class="bldlbl" x="782" y="415">東(E)棟</text>
-  <rect class="bld" x="380" y="620" width="400" height="130" rx="6"/><text class="bldlbl" x="700" y="712">南(S)棟</text>
-  <rect class="bld" x="60" y="640" width="180" height="90" rx="6"/><text class="bldlbl" x="100" y="690">体育館</text>
+  <rect class="bld" x="770" y="420" width="90" height="180" rx="4"/><text class="bldlbl" x="782" y="415">東(E)棟</text>
+  <rect class="bld" x="380" y="620" width="400" height="130" rx="4"/><text class="bldlbl" x="700" y="712">南(S)棟</text>
+  <rect class="bld" x="60" y="640" width="180" height="90" rx="4"/><text class="bldlbl" x="100" y="690">体育館</text>
   <g id="routes"></g>
   <g id="spots"></g>
   <g id="dots"></g>
@@ -225,15 +247,18 @@ select {
   </label>
 </div>
 <div class="status" id="status"></div>
-<p class="note">●=滞在中, ○(点滅)=待機中 </p>
+<p class="note">●=滞在中, ○(点滅)=待機中</p>
 
 <script>
 const DATA = {"names": ["4A", "寮", "西棟", "教育実験室", "工房", "CR", "織機", "iPlaza"], "edgeT": [[0.0, 3.5, 3.0, 3.5, 2.5, 2.5, 2.0, 1.0], [3.5, 0.0, 2.5, 4.5, 5.5, 4.0, 2.0, 2.5], [3.0, 2.5, 0.0, 2.0, 3.0, 4.0, 2.0, 2.0], [3.5, 4.5, 2.0, 0.0, 1.0, 3.0, 3.5, 3.0], [2.5, 5.5, 3.0, 1.0, 0.0, 4.0, 3.5, 3.5], [2.5, 4.0, 4.0, 3.0, 4.0, 0.0, 2.0, 3.0], [2.0, 2.0, 2.0, 3.5, 3.5, 2.0, 0.0, 1.0], [1.0, 2.5, 2.0, 3.0, 3.5, 3.0, 1.0, 0.0]], "groups": [{"name": "G1", "end": 60.5, "segs": [{"t0": 0.0, "t1": 1.0, "k": "move", "n": [0, 7]}, {"t0": 1.0, "t1": 4.0, "k": "stay", "n": [7]}, {"t0": 4.0, "t1": 6.0, "k": "move", "n": [7, 2]}, {"t0": 6.0, "t1": 11.0, "k": "stay", "n": [2]}, {"t0": 11.0, "t1": 13.5, "k": "move", "n": [2, 1]}, {"t0": 13.5, "t1": 23.5, "k": "stay", "n": [1]}, {"t0": 23.5, "t1": 27.5, "k": "move", "n": [1, 5]}, {"t0": 27.5, "t1": 37.5, "k": "stay", "n": [5]}, {"t0": 37.5, "t1": 39.5, "k": "move", "n": [5, 6]}, {"t0": 39.5, "t1": 42.5, "k": "stay", "n": [6]}, {"t0": 42.5, "t1": 46.0, "k": "move", "n": [6, 3]}, {"t0": 46.0, "t1": 49.0, "k": "stay", "n": [3]}, {"t0": 49.0, "t1": 50.0, "k": "move", "n": [3, 4]}, {"t0": 50.0, "t1": 58.0, "k": "stay", "n": [4]}, {"t0": 58.0, "t1": 60.5, "k": "move", "n": [4, 0]}]}, {"name": "G2", "end": 60.0, "segs": [{"t0": 0.0, "t1": 2.5, "k": "move", "n": [0, 5]}, {"t0": 2.5, "t1": 12.5, "k": "stay", "n": [5]}, {"t0": 12.5, "t1": 14.5, "k": "move", "n": [5, 6]}, {"t0": 14.5, "t1": 17.5, "k": "stay", "n": [6]}, {"t0": 17.5, "t1": 18.5, "k": "move", "n": [6, 7]}, {"t0": 18.5, "t1": 21.5, "k": "stay", "n": [7]}, {"t0": 21.5, "t1": 25.0, "k": "move", "n": [7, 4]}, {"t0": 25.0, "t1": 33.0, "k": "stay", "n": [4]}, {"t0": 33.0, "t1": 34.0, "k": "move", "n": [4, 3]}, {"t0": 34.0, "t1": 37.0, "k": "stay", "n": [3]}, {"t0": 37.0, "t1": 39.0, "k": "move", "n": [3, 2]}, {"t0": 39.0, "t1": 44.0, "k": "stay", "n": [2]}, {"t0": 44.0, "t1": 46.5, "k": "move", "n": [2, 1]}, {"t0": 46.5, "t1": 56.5, "k": "stay", "n": [1]}, {"t0": 56.5, "t1": 60.0, "k": "move", "n": [1, 7, 0]}]}, {"name": "G3", "end": 60.5, "segs": [{"t0": 0.0, "t1": 2.0, "k": "move", "n": [0, 7, 6]}, {"t0": 2.0, "t1": 5.0, "k": "stay", "n": [6]}, {"t0": 5.0, "t1": 6.0, "k": "move", "n": [6, 7]}, {"t0": 6.0, "t1": 9.0, "k": "stay", "n": [7]}, {"t0": 9.0, "t1": 12.5, "k": "move", "n": [7, 4]}, {"t0": 12.5, "t1": 20.5, "k": "stay", "n": [4]}, {"t0": 20.5, "t1": 21.5, "k": "move", "n": [4, 3]}, {"t0": 21.5, "t1": 24.5, "k": "stay", "n": [3]}, {"t0": 24.5, "t1": 26.5, "k": "move", "n": [3, 2]}, {"t0": 26.5, "t1": 31.5, "k": "stay", "n": [2]}, {"t0": 31.5, "t1": 34.0, "k": "move", "n": [2, 1]}, {"t0": 34.0, "t1": 44.0, "k": "stay", "n": [1]}, {"t0": 44.0, "t1": 48.0, "k": "move", "n": [1, 5]}, {"t0": 48.0, "t1": 58.0, "k": "stay", "n": [5]}, {"t0": 58.0, "t1": 60.5, "k": "move", "n": [5, 0]}]}, {"name": "G4", "end": 60.5, "segs": [{"t0": 0.0, "t1": 2.5, "k": "move", "n": [0, 4]}, {"t0": 2.5, "t1": 10.5, "k": "stay", "n": [4]}, {"t0": 10.5, "t1": 11.5, "k": "move", "n": [4, 3]}, {"t0": 11.5, "t1": 14.5, "k": "stay", "n": [3]}, {"t0": 14.5, "t1": 16.5, "k": "move", "n": [3, 2]}, {"t0": 16.5, "t1": 21.5, "k": "stay", "n": [2]}, {"t0": 21.5, "t1": 24.0, "k": "move", "n": [2, 1]}, {"t0": 24.0, "t1": 34.0, "k": "stay", "n": [1]}, {"t0": 34.0, "t1": 38.0, "k": "move", "n": [1, 5]}, {"t0": 38.0, "t1": 48.0, "k": "stay", "n": [5]}, {"t0": 48.0, "t1": 51.0, "k": "move", "n": [5, 6, 7]}, {"t0": 51.0, "t1": 54.0, "k": "stay", "n": [7]}, {"t0": 54.0, "t1": 54.5, "k": "wait", "n": [7]}, {"t0": 54.5, "t1": 55.5, "k": "move", "n": [7, 6]}, {"t0": 55.5, "t1": 58.5, "k": "stay", "n": [6]}, {"t0": 58.5, "t1": 60.5, "k": "move", "n": [6, 7, 0]}]}, {"name": "G5", "end": 60.5, "segs": [{"t0": 0.0, "t1": 3.5, "k": "move", "n": [0, 7, 1]}, {"t0": 3.5, "t1": 13.5, "k": "stay", "n": [1]}, {"t0": 13.5, "t1": 17.5, "k": "move", "n": [1, 5]}, {"t0": 17.5, "t1": 27.5, "k": "stay", "n": [5]}, {"t0": 27.5, "t1": 30.5, "k": "move", "n": [5, 3]}, {"t0": 30.5, "t1": 33.5, "k": "stay", "n": [3]}, {"t0": 33.5, "t1": 34.5, "k": "move", "n": [3, 4]}, {"t0": 34.5, "t1": 42.5, "k": "stay", "n": [4]}, {"t0": 42.5, "t1": 45.5, "k": "move", "n": [4, 2]}, {"t0": 45.5, "t1": 50.5, "k": "stay", "n": [2]}, {"t0": 50.5, "t1": 52.5, "k": "move", "n": [2, 6]}, {"t0": 52.5, "t1": 55.5, "k": "stay", "n": [6]}, {"t0": 55.5, "t1": 56.5, "k": "move", "n": [6, 7]}, {"t0": 56.5, "t1": 59.5, "k": "stay", "n": [7]}, {"t0": 59.5, "t1": 60.5, "k": "move", "n": [7, 0]}]}], "T": 60.5};
 const TMAX = 60.5;
 const POS = {0:[600,655],1:[330,175],2:[290,480],3:[455,645],4:[470,742],5:[812,530],6:[555,430],7:[565,530]};
 const BENDS = {"4-5":[[672,712]]};
-// ダークテーマに映える明るめのネオンカラーに変更
-const HEX = ["#60a5fa", "#34d399", "#f472b6", "#fbbf24", "#2dd4bf"];
+
+/* グループの識別用カラー：
+   白背景で視認性が高く, 落ち着きのあるソリッドカラーに変更 */
+const HEX = ["#0284c7", "#ea580c", "#16a34a", "#9333ea", "#dc2626"];
+
 const svgNS = "http://www.w3.org/2000/svg";
 const spotsG = document.getElementById("spots"), dotsG = document.getElementById("dots"), routesG = document.getElementById("routes");
 
@@ -243,11 +268,13 @@ function edgePts(a,b){
   if(BENDS[k2]) return [POS[a],...BENDS[k2].slice().reverse(),POS[b]];
   return [POS[a],POS[b]];
 }
+
 function polyLen(pts){
   let L=0;
   for(let i=0;i<pts.length-1;i++)L+=Math.hypot(pts[i+1][0]-pts[i][0],pts[i+1][1]-pts[i][1]);
   return L;
 }
+
 function polyAt(pts,f){
   const L=polyLen(pts); let target=f*L;
   for(let i=0;i<pts.length-1;i++){
@@ -285,21 +312,25 @@ const dots=[],labels=[];
 DATA.groups.forEach((g,i)=>{
   const c=document.createElementNS(svgNS,"circle");
   c.setAttribute("r",11);c.setAttribute("fill",HEX[i]);
-  // アウトラインを背景色に合わせる
-  c.setAttribute("stroke","#0f172a");c.setAttribute("stroke-width",2.5);
+  // 白い縁取りでマップからくっきり浮かせる
+  c.setAttribute("stroke","#ffffff");c.setAttribute("stroke-width",2);
   dotsG.appendChild(c);dots.push(c);
+  
   const t=document.createElementNS(svgNS,"text");
-  t.setAttribute("fill","#0f172a");t.setAttribute("font-size","10");t.setAttribute("font-weight","800");
-  t.setAttribute("text-anchor","middle");t.textContent=g.name;dotsG.appendChild(t);labels.push(t);
+  t.setAttribute("fill","#ffffff");
+  t.setAttribute("font-size","10");
+  t.setAttribute("font-weight","700");
+  t.setAttribute("text-anchor","middle");
+  t.textContent=g.name;
+  dotsG.appendChild(t);labels.push(t);
 });
 
 const statusEl=document.getElementById("status");
 const cards=DATA.groups.map((g,i)=>{
   const d=document.createElement("div");d.className="card";
-  // bタグのフレックスが崩れる原因だったので、ヘッダーとボディのdivに分離
   d.innerHTML=`
     <div class="card-header">
-      <span class="dotchip" style="background:${HEX[i]}; box-shadow: 0 0 6px ${HEX[i]}"></span>
+      <span class="dotchip" style="background:${HEX[i]}"></span>
       ${g.name}
     </div>
     <div class="card-body"></div>
