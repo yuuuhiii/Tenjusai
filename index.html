@@ -5,52 +5,207 @@
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>天樹祭キャンパスツアー ライブマップ</title>
 <style>
-:root{
-  --paper:#f7f6f2; --ink:#22211e; --sub:#6d6b64; --line:#d9d7cf;
+:root {
+  /* モダンなダークテーマのカラーパレット */
+  --bg: #0f172a;
+  --card-bg: #1e293b;
+  --text-main: #f8fafc;
+  --text-sub: #94a3b8;
+  --line: #334155;
+  --bld-fill: #1e293b;
+  --bld-stroke: #334155;
+  --bld-text: #64748b;
+  --spot-fill: #0f172a;
+  --spot-stroke: #475569;
+  --spot-text: #e2e8f0;
+  --accent: #3b82f6;
+  --accent-hover: #2563eb;
 }
-*{box-sizing:border-box;margin:0;padding:0}
-body{background:var(--paper);color:var(--ink);font-family:"Hiragino Kaku Gothic ProN","Noto Sans JP",sans-serif;padding:20px 16px 40px;max-width:960px;margin:0 auto}
-h1{font-size:20px;font-weight:600;letter-spacing:.04em}
-p.sub{font-size:13px;color:var(--sub);margin:4px 0 14px}
-.mapwrap{background:#fff;border:1px solid var(--line);border-radius:12px;overflow:hidden}
-svg{display:block;width:100%;height:auto}
-.bld{fill:#eceae3;stroke:#b8b5aa;stroke-width:1.5}
-.bldlbl{fill:#8a877d;font-size:13px}
-.spot{fill:#fff;stroke:#55524a;stroke-width:1.5}
-.spotlbl{fill:#33312c;font-size:13px;font-weight:600;paint-order:stroke;stroke:#fff;stroke-width:3px}
-.route{stroke:#c9c6bb;stroke-width:2;stroke-dasharray:3 5;fill:none}
-.controls{display:flex;align-items:center;gap:12px;margin:14px 0 6px;flex-wrap:wrap}
-button{font:inherit;border:1px solid var(--line);background:#fff;border-radius:8px;padding:8px 16px;cursor:pointer;font-weight:600}
-button:hover{background:#f0efe9}
-input[type=range]{flex:1;min-width:200px;accent-color:#55524a}
-.clock{font-variant-numeric:tabular-nums;font-size:22px;font-weight:600;min-width:110px}
-.clock small{font-size:12px;color:var(--sub);font-weight:400;display:block}
-.speed{font-size:12px;color:var(--sub)}
-.status{display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:8px;margin-top:12px}
-.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:8px 12px;font-size:13px}
-.card b{display:flex;align-items:center;gap:6px;font-size:14px}
-.dotchip{width:10px;height:10px;border-radius:50%;display:inline-block}
-.card span{color:var(--sub)}
-.note{font-size:12px;color:var(--sub);margin-top:14px;line-height:1.7}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  background: var(--bg);
+  color: var(--text-main);
+  font-family: "Inter", "Hiragino Kaku Gothic ProN", "Noto Sans JP", sans-serif;
+  padding: 30px 20px 50px;
+  max-width: 960px;
+  margin: 0 auto;
+}
+h1 {
+  font-size: 24px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+  /* タイトルにグラデーションを追加してリッチに */
+  background: linear-gradient(90deg, #60a5fa, #a78bfa);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  margin-bottom: 8px;
+}
+p.sub {
+  font-size: 13px;
+  color: var(--text-sub);
+  margin-bottom: 24px;
+  line-height: 1.5;
+}
+.mapwrap {
+  background: var(--card-bg);
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+  overflow: hidden;
+}
+svg { display: block; width: 100%; height: auto; }
+.bld { fill: var(--bld-fill); stroke: var(--bld-stroke); stroke-width: 2; }
+.bldlbl { fill: var(--bld-text); font-size: 14px; font-weight: 600; }
+.spot { fill: var(--spot-fill); stroke: var(--spot-stroke); stroke-width: 2; }
+.spotlbl { fill: var(--spot-text); font-size: 13px; font-weight: 700; paint-order: stroke; stroke: var(--bg); stroke-width: 4px; }
+.route { stroke: var(--line); stroke-width: 2; stroke-dasharray: 4 6; fill: none; }
+
+.controls {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 24px 0 16px;
+  flex-wrap: wrap;
+  background: var(--card-bg);
+  padding: 16px 20px;
+  border-radius: 12px;
+  border: 1px solid var(--line);
+}
+button {
+  font: inherit;
+  background: var(--accent);
+  color: #fff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 20px;
+  cursor: pointer;
+  font-weight: 600;
+  transition: all 0.2s;
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+}
+button:hover {
+  background: var(--accent-hover);
+  transform: translateY(-1px);
+}
+/* スライダーをカスタムしてモダンに */
+input[type=range] {
+  -webkit-appearance: none;
+  background: transparent;
+  flex: 1;
+  min-width: 150px;
+}
+input[type=range]::-webkit-slider-runnable-track {
+  width: 100%;
+  height: 6px;
+  background: var(--line);
+  border-radius: 3px;
+}
+input[type=range]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  height: 16px;
+  width: 16px;
+  border-radius: 50%;
+  background: var(--accent);
+  margin-top: -5px;
+  cursor: pointer;
+  box-shadow: 0 0 10px rgba(59, 130, 246, 0.5);
+}
+.clock {
+  font-variant-numeric: tabular-nums;
+  font-size: 24px;
+  font-weight: 700;
+  min-width: 110px;
+  line-height: 1.1;
+  text-align: right;
+}
+.clock small {
+  font-size: 11px;
+  color: var(--text-sub);
+  font-weight: 500;
+  display: block;
+  text-align: right;
+  margin-top: 2px;
+}
+.speed {
+  font-size: 13px;
+  color: var(--text-sub);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+select {
+  font: inherit;
+  background: var(--bg);
+  color: var(--text-main);
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  padding: 4px 8px;
+  outline: none;
+}
+.status {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+  gap: 12px;
+  margin-top: 16px;
+}
+/* 表示が崩れていた文字部分のレイアウトを修正 */
+.card {
+  background: var(--card-bg);
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  padding: 12px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+.card-header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  font-weight: 700;
+}
+.dotchip {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  display: inline-block;
+}
+.card-body {
+  font-size: 13px;
+  color: var(--text-sub);
+  line-height: 1.4;
+}
+.note {
+  font-size: 13px;
+  color: var(--text-sub);
+  margin-top: 24px;
+  line-height: 1.6;
+  padding: 16px;
+  background: rgba(30, 41, 59, 0.5);
+  border-radius: 8px;
+  border: 1px solid var(--line);
+}
 </style>
 </head>
 <body>
 <h1>天樹祭 キャンパスツアー ライブマップ</h1>
-<p class="sub">5グループ同時出発 / 全体58.5分</p>
+<p class="sub">5グループ同時出発 / 全体60.5分 (実測値ベース, 寮10分・工房8分 確定版) / どのスポットも同時に1グループのみ (CP-SAT最適化)</p>
 <div class="mapwrap">
 <svg viewBox="0 0 900 800" role="img" aria-label="キャンパス地図上のグループ位置アニメーション">
   <g transform="rotate(-18 350 180)">
-    <rect class="bld" x="120" y="120" width="460" height="60" rx="4"/>
-    <rect class="bld" x="140" y="200" width="440" height="55" rx="4"/>
+    <rect class="bld" x="120" y="120" width="460" height="60" rx="6"/>
+    <rect class="bld" x="140" y="200" width="440" height="55" rx="6"/>
   </g>
   <text class="bldlbl" x="180" y="150">久方寮</text>
-  <rect class="bld" x="560" y="220" width="300" height="80" rx="4"/><text class="bldlbl" x="680" y="265">北(N)棟</text>
-  <rect class="bld" x="200" y="380" width="180" height="200" rx="4"/><text class="bldlbl" x="235" y="470">西(W)棟</text>
-  <rect class="bld" x="500" y="360" width="180" height="240" rx="4"/><text class="bldlbl" x="545" y="470">中央(C)棟</text>
+  <rect class="bld" x="560" y="220" width="300" height="80" rx="6"/><text class="bldlbl" x="680" y="265">北(N)棟</text>
+  <rect class="bld" x="200" y="380" width="180" height="200" rx="6"/><text class="bldlbl" x="235" y="470">西(W)棟</text>
+  <rect class="bld" x="500" y="360" width="180" height="240" rx="6"/><text class="bldlbl" x="545" y="470">中央(C)棟</text>
   <circle class="bld" cx="590" cy="330" r="42"/>
-  <rect class="bld" x="770" y="420" width="90" height="180" rx="4"/><text class="bldlbl" x="782" y="415">東(E)棟</text>
-  <rect class="bld" x="380" y="620" width="400" height="130" rx="4"/><text class="bldlbl" x="700" y="712">南(S)棟</text>
-  <rect class="bld" x="60" y="640" width="180" height="90" rx="4"/><text class="bldlbl" x="100" y="690">体育館</text>
+  <rect class="bld" x="770" y="420" width="90" height="180" rx="6"/><text class="bldlbl" x="782" y="415">東(E)棟</text>
+  <rect class="bld" x="380" y="620" width="400" height="130" rx="6"/><text class="bldlbl" x="700" y="712">南(S)棟</text>
+  <rect class="bld" x="60" y="640" width="180" height="90" rx="6"/><text class="bldlbl" x="100" y="690">体育館</text>
   <g id="routes"></g>
   <g id="spots"></g>
   <g id="dots"></g>
@@ -58,21 +213,29 @@ input[type=range]{flex:1;min-width:200px;accent-color:#55524a}
 </div>
 <div class="controls">
   <button id="play">▶ 再生</button>
-  <input type="range" id="time" min="0" max="58.5" step="0.05" value="0">
+  <input type="range" id="time" min="0" max="60.5" step="0.05" value="0">
   <div class="clock"><span id="clk">0.0</span> 分<small>スタートから</small></div>
-  <label class="speed">速度 <select id="spd"><option value="1">1x</option><option value="2" selected>2x</option><option value="5">5x</option><option value="10">10x</option></select></label>
+  <label class="speed">速度 
+    <select id="spd">
+      <option value="1">1x</option>
+      <option value="2" selected>2x</option>
+      <option value="5">5x</option>
+      <option value="10">10x</option>
+    </select>
+  </label>
 </div>
 <div class="status" id="status"></div>
-<p class="note">●=滞在中, ○(点滅)=待機中, 移動中は経路上を進みます. 破線は主要動線.</p>
+<p class="note">●=滞在中, ○(点滅)=待機中, 移動中は経路上を進みます. 破線は主要動線. 実測値が変わったらスケジュールJSONを差し替えるだけで更新できます.</p>
+
 <script>
-const DATA = {"names": ["4A", "寮", "西棟", "教育実験室", "工房", "CR", "織機", "iPlaza"], "edgeT": [[0.0, 3.5, 3.0, 3.5, 2.5, 2.5, 2.0, 1.0], [3.5, 0.0, 2.5, 4.5, 5.5, 4.0, 2.0, 2.5], [3.0, 2.5, 0.0, 2.0, 3.0, 4.0, 2.0, 2.0], [3.5, 4.5, 2.0, 0.0, 1.0, 3.0, 3.5, 3.0], [2.5, 5.5, 3.0, 1.0, 0.0, 4.0, 3.5, 3.5], [2.5, 4.0, 4.0, 3.0, 4.0, 0.0, 2.0, 3.0], [2.0, 2.0, 2.0, 3.5, 3.5, 2.0, 0.0, 1.0], [1.0, 2.5, 2.0, 3.0, 3.5, 3.0, 1.0, 0.0]], "groups": [{"name": "G1", "end": 55.0, "segs": [{"t0": 0.0, "t1": 2.5, "k": "move", "n": [0, 5]}, {"t0": 2.5, "t1": 12.5, "k": "stay", "n": [5]}, {"t0": 12.5, "t1": 14.5, "k": "move", "n": [5, 6]}, {"t0": 14.5, "t1": 17.5, "k": "stay", "n": [6]}, {"t0": 17.5, "t1": 18.5, "k": "move", "n": [6, 7]}, {"t0": 18.5, "t1": 21.5, "k": "stay", "n": [7]}, {"t0": 21.5, "t1": 24.0, "k": "move", "n": [7, 1]}, {"t0": 24.0, "t1": 34.0, "k": "stay", "n": [1]}, {"t0": 34.0, "t1": 36.5, "k": "move", "n": [1, 2]}, {"t0": 36.5, "t1": 41.5, "k": "stay", "n": [2]}, {"t0": 41.5, "t1": 43.5, "k": "move", "n": [2, 3]}, {"t0": 43.5, "t1": 46.5, "k": "stay", "n": [3]}, {"t0": 46.5, "t1": 47.5, "k": "move", "n": [3, 4]}, {"t0": 47.5, "t1": 52.5, "k": "stay", "n": [4]}, {"t0": 52.5, "t1": 55.0, "k": "move", "n": [4, 0]}]}, {"name": "G2", "end": 57.5, "segs": [{"t0": 0.0, "t1": 1.0, "k": "move", "n": [0, 7]}, {"t0": 1.0, "t1": 4.0, "k": "stay", "n": [7]}, {"t0": 4.0, "t1": 6.0, "k": "move", "n": [7, 2]}, {"t0": 6.0, "t1": 11.0, "k": "stay", "n": [2]}, {"t0": 11.0, "t1": 13.0, "k": "move", "n": [2, 3]}, {"t0": 13.0, "t1": 16.0, "k": "stay", "n": [3]}, {"t0": 16.0, "t1": 17.0, "k": "move", "n": [3, 4]}, {"t0": 17.0, "t1": 22.0, "k": "stay", "n": [4]}, {"t0": 22.0, "t1": 26.0, "k": "move", "n": [4, 5]}, {"t0": 26.0, "t1": 36.0, "k": "stay", "n": [5]}, {"t0": 36.0, "t1": 38.0, "k": "move", "n": [5, 6]}, {"t0": 38.0, "t1": 41.0, "k": "stay", "n": [6]}, {"t0": 41.0, "t1": 42.0, "k": "wait", "n": [6]}, {"t0": 42.0, "t1": 44.0, "k": "move", "n": [6, 1]}, {"t0": 44.0, "t1": 54.0, "k": "stay", "n": [1]}, {"t0": 54.0, "t1": 57.5, "k": "move", "n": [1, 7, 0]}]}, {"name": "G3", "end": 58.5, "segs": [{"t0": 0.0, "t1": 2.5, "k": "move", "n": [0, 4]}, {"t0": 2.5, "t1": 7.5, "k": "stay", "n": [4]}, {"t0": 7.5, "t1": 8.5, "k": "move", "n": [4, 3]}, {"t0": 8.5, "t1": 11.5, "k": "stay", "n": [3]}, {"t0": 11.5, "t1": 14.5, "k": "move", "n": [3, 5]}, {"t0": 14.5, "t1": 24.5, "k": "stay", "n": [5]}, {"t0": 24.5, "t1": 27.5, "k": "move", "n": [5, 6, 7]}, {"t0": 27.5, "t1": 30.5, "k": "stay", "n": [7]}, {"t0": 30.5, "t1": 31.5, "k": "wait", "n": [7]}, {"t0": 31.5, "t1": 34.0, "k": "move", "n": [7, 1]}, {"t0": 34.0, "t1": 44.0, "k": "stay", "n": [1]}, {"t0": 44.0, "t1": 46.5, "k": "move", "n": [1, 2]}, {"t0": 46.5, "t1": 51.5, "k": "stay", "n": [2]}, {"t0": 51.5, "t1": 53.5, "k": "move", "n": [2, 6]}, {"t0": 53.5, "t1": 56.5, "k": "stay", "n": [6]}, {"t0": 56.5, "t1": 58.5, "k": "move", "n": [6, 7, 0]}]}, {"name": "G4", "end": 58.5, "segs": [{"t0": 0.0, "t1": 0.5, "k": "wait", "n": [0]}, {"t0": 0.5, "t1": 2.5, "k": "move", "n": [0, 7, 6]}, {"t0": 2.5, "t1": 5.5, "k": "stay", "n": [6]}, {"t0": 5.5, "t1": 6.5, "k": "move", "n": [6, 7]}, {"t0": 6.5, "t1": 9.5, "k": "stay", "n": [7]}, {"t0": 9.5, "t1": 11.0, "k": "wait", "n": [7]}, {"t0": 11.0, "t1": 13.5, "k": "move", "n": [7, 1]}, {"t0": 13.5, "t1": 23.5, "k": "stay", "n": [1]}, {"t0": 23.5, "t1": 26.0, "k": "move", "n": [1, 2]}, {"t0": 26.0, "t1": 31.0, "k": "stay", "n": [2]}, {"t0": 31.0, "t1": 34.0, "k": "move", "n": [2, 4]}, {"t0": 34.0, "t1": 39.0, "k": "stay", "n": [4]}, {"t0": 39.0, "t1": 40.0, "k": "move", "n": [4, 3]}, {"t0": 40.0, "t1": 43.0, "k": "stay", "n": [3]}, {"t0": 43.0, "t1": 46.0, "k": "move", "n": [3, 5]}, {"t0": 46.0, "t1": 56.0, "k": "stay", "n": [5]}, {"t0": 56.0, "t1": 58.5, "k": "move", "n": [5, 0]}]}, {"name": "G5", "end": 56.0, "segs": [{"t0": 0.0, "t1": 3.5, "k": "move", "n": [0, 7, 1]}, {"t0": 3.5, "t1": 13.5, "k": "stay", "n": [1]}, {"t0": 13.5, "t1": 16.0, "k": "move", "n": [1, 2]}, {"t0": 16.0, "t1": 21.0, "k": "stay", "n": [2]}, {"t0": 21.0, "t1": 23.0, "k": "move", "n": [2, 3]}, {"t0": 23.0, "t1": 26.0, "k": "stay", "n": [3]}, {"t0": 26.0, "t1": 27.0, "k": "move", "n": [3, 4]}, {"t0": 27.0, "t1": 32.0, "k": "stay", "n": [4]}, {"t0": 32.0, "t1": 36.0, "k": "move", "n": [4, 5]}, {"t0": 36.0, "t1": 46.0, "k": "stay", "n": [5]}, {"t0": 46.0, "t1": 48.0, "k": "move", "n": [5, 6]}, {"t0": 48.0, "t1": 51.0, "k": "stay", "n": [6]}, {"t0": 51.0, "t1": 52.0, "k": "move", "n": [6, 7]}, {"t0": 52.0, "t1": 55.0, "k": "stay", "n": [7]}, {"t0": 55.0, "t1": 56.0, "k": "move", "n": [7, 0]}]}], "T": 58.5};
-const TMAX = 58.5;
+const DATA = {"names": ["4A", "寮", "西棟", "教育実験室", "工房", "CR", "織機", "iPlaza"], "edgeT": [[0.0, 3.5, 3.0, 3.5, 2.5, 2.5, 2.0, 1.0], [3.5, 0.0, 2.5, 4.5, 5.5, 4.0, 2.0, 2.5], [3.0, 2.5, 0.0, 2.0, 3.0, 4.0, 2.0, 2.0], [3.5, 4.5, 2.0, 0.0, 1.0, 3.0, 3.5, 3.0], [2.5, 5.5, 3.0, 1.0, 0.0, 4.0, 3.5, 3.5], [2.5, 4.0, 4.0, 3.0, 4.0, 0.0, 2.0, 3.0], [2.0, 2.0, 2.0, 3.5, 3.5, 2.0, 0.0, 1.0], [1.0, 2.5, 2.0, 3.0, 3.5, 3.0, 1.0, 0.0]], "groups": [{"name": "G1", "end": 60.5, "segs": [{"t0": 0.0, "t1": 1.0, "k": "move", "n": [0, 7]}, {"t0": 1.0, "t1": 4.0, "k": "stay", "n": [7]}, {"t0": 4.0, "t1": 6.0, "k": "move", "n": [7, 2]}, {"t0": 6.0, "t1": 11.0, "k": "stay", "n": [2]}, {"t0": 11.0, "t1": 13.5, "k": "move", "n": [2, 1]}, {"t0": 13.5, "t1": 23.5, "k": "stay", "n": [1]}, {"t0": 23.5, "t1": 27.5, "k": "move", "n": [1, 5]}, {"t0": 27.5, "t1": 37.5, "k": "stay", "n": [5]}, {"t0": 37.5, "t1": 39.5, "k": "move", "n": [5, 6]}, {"t0": 39.5, "t1": 42.5, "k": "stay", "n": [6]}, {"t0": 42.5, "t1": 46.0, "k": "move", "n": [6, 3]}, {"t0": 46.0, "t1": 49.0, "k": "stay", "n": [3]}, {"t0": 49.0, "t1": 50.0, "k": "move", "n": [3, 4]}, {"t0": 50.0, "t1": 58.0, "k": "stay", "n": [4]}, {"t0": 58.0, "t1": 60.5, "k": "move", "n": [4, 0]}]}, {"name": "G2", "end": 60.0, "segs": [{"t0": 0.0, "t1": 2.5, "k": "move", "n": [0, 5]}, {"t0": 2.5, "t1": 12.5, "k": "stay", "n": [5]}, {"t0": 12.5, "t1": 14.5, "k": "move", "n": [5, 6]}, {"t0": 14.5, "t1": 17.5, "k": "stay", "n": [6]}, {"t0": 17.5, "t1": 18.5, "k": "move", "n": [6, 7]}, {"t0": 18.5, "t1": 21.5, "k": "stay", "n": [7]}, {"t0": 21.5, "t1": 25.0, "k": "move", "n": [7, 4]}, {"t0": 25.0, "t1": 33.0, "k": "stay", "n": [4]}, {"t0": 33.0, "t1": 34.0, "k": "move", "n": [4, 3]}, {"t0": 34.0, "t1": 37.0, "k": "stay", "n": [3]}, {"t0": 37.0, "t1": 39.0, "k": "move", "n": [3, 2]}, {"t0": 39.0, "t1": 44.0, "k": "stay", "n": [2]}, {"t0": 44.0, "t1": 46.5, "k": "move", "n": [2, 1]}, {"t0": 46.5, "t1": 56.5, "k": "stay", "n": [1]}, {"t0": 56.5, "t1": 60.0, "k": "move", "n": [1, 7, 0]}]}, {"name": "G3", "end": 60.5, "segs": [{"t0": 0.0, "t1": 2.0, "k": "move", "n": [0, 7, 6]}, {"t0": 2.0, "t1": 5.0, "k": "stay", "n": [6]}, {"t0": 5.0, "t1": 6.0, "k": "move", "n": [6, 7]}, {"t0": 6.0, "t1": 9.0, "k": "stay", "n": [7]}, {"t0": 9.0, "t1": 12.5, "k": "move", "n": [7, 4]}, {"t0": 12.5, "t1": 20.5, "k": "stay", "n": [4]}, {"t0": 20.5, "t1": 21.5, "k": "move", "n": [4, 3]}, {"t0": 21.5, "t1": 24.5, "k": "stay", "n": [3]}, {"t0": 24.5, "t1": 26.5, "k": "move", "n": [3, 2]}, {"t0": 26.5, "t1": 31.5, "k": "stay", "n": [2]}, {"t0": 31.5, "t1": 34.0, "k": "move", "n": [2, 1]}, {"t0": 34.0, "t1": 44.0, "k": "stay", "n": [1]}, {"t0": 44.0, "t1": 48.0, "k": "move", "n": [1, 5]}, {"t0": 48.0, "t1": 58.0, "k": "stay", "n": [5]}, {"t0": 58.0, "t1": 60.5, "k": "move", "n": [5, 0]}]}, {"name": "G4", "end": 60.5, "segs": [{"t0": 0.0, "t1": 2.5, "k": "move", "n": [0, 4]}, {"t0": 2.5, "t1": 10.5, "k": "stay", "n": [4]}, {"t0": 10.5, "t1": 11.5, "k": "move", "n": [4, 3]}, {"t0": 11.5, "t1": 14.5, "k": "stay", "n": [3]}, {"t0": 14.5, "t1": 16.5, "k": "move", "n": [3, 2]}, {"t0": 16.5, "t1": 21.5, "k": "stay", "n": [2]}, {"t0": 21.5, "t1": 24.0, "k": "move", "n": [2, 1]}, {"t0": 24.0, "t1": 34.0, "k": "stay", "n": [1]}, {"t0": 34.0, "t1": 38.0, "k": "move", "n": [1, 5]}, {"t0": 38.0, "t1": 48.0, "k": "stay", "n": [5]}, {"t0": 48.0, "t1": 51.0, "k": "move", "n": [5, 6, 7]}, {"t0": 51.0, "t1": 54.0, "k": "stay", "n": [7]}, {"t0": 54.0, "t1": 54.5, "k": "wait", "n": [7]}, {"t0": 54.5, "t1": 55.5, "k": "move", "n": [7, 6]}, {"t0": 55.5, "t1": 58.5, "k": "stay", "n": [6]}, {"t0": 58.5, "t1": 60.5, "k": "move", "n": [6, 7, 0]}]}, {"name": "G5", "end": 60.5, "segs": [{"t0": 0.0, "t1": 3.5, "k": "move", "n": [0, 7, 1]}, {"t0": 3.5, "t1": 13.5, "k": "stay", "n": [1]}, {"t0": 13.5, "t1": 17.5, "k": "move", "n": [1, 5]}, {"t0": 17.5, "t1": 27.5, "k": "stay", "n": [5]}, {"t0": 27.5, "t1": 30.5, "k": "move", "n": [5, 3]}, {"t0": 30.5, "t1": 33.5, "k": "stay", "n": [3]}, {"t0": 33.5, "t1": 34.5, "k": "move", "n": [3, 4]}, {"t0": 34.5, "t1": 42.5, "k": "stay", "n": [4]}, {"t0": 42.5, "t1": 45.5, "k": "move", "n": [4, 2]}, {"t0": 45.5, "t1": 50.5, "k": "stay", "n": [2]}, {"t0": 50.5, "t1": 52.5, "k": "move", "n": [2, 6]}, {"t0": 52.5, "t1": 55.5, "k": "stay", "n": [6]}, {"t0": 55.5, "t1": 56.5, "k": "move", "n": [6, 7]}, {"t0": 56.5, "t1": 59.5, "k": "stay", "n": [7]}, {"t0": 59.5, "t1": 60.5, "k": "move", "n": [7, 0]}]}], "T": 60.5};
+const TMAX = 60.5;
 const POS = {0:[600,655],1:[330,175],2:[290,480],3:[455,645],4:[470,742],5:[812,530],6:[555,430],7:[565,530]};
-// 見やすさ用の描画ウェイポイント (実時間には影響しない): 工房-CRは4Aを避けて南側を回す
 const BENDS = {"4-5":[[672,712]]};
-const HEX=["#2a78d6","#008300","#d55181","#c98500","#199e70"];
-const svgNS="http://www.w3.org/2000/svg";
-const spotsG=document.getElementById("spots"), dotsG=document.getElementById("dots"), routesG=document.getElementById("routes");
+// ダークテーマに映える明るめのネオンカラーに変更
+const HEX = ["#60a5fa", "#34d399", "#f472b6", "#fbbf24", "#2dd4bf"];
+const svgNS = "http://www.w3.org/2000/svg";
+const spotsG = document.getElementById("spots"), dotsG = document.getElementById("dots"), routesG = document.getElementById("routes");
 
 function edgePts(a,b){
   const k1=a+"-"+b, k2=b+"-"+a;
@@ -85,7 +248,7 @@ function polyLen(pts){
   for(let i=0;i<pts.length-1;i++)L+=Math.hypot(pts[i+1][0]-pts[i][0],pts[i+1][1]-pts[i][1]);
   return L;
 }
-function polyAt(pts,f){ // f in [0,1] along geometric length
+function polyAt(pts,f){
   const L=polyLen(pts); let target=f*L;
   for(let i=0;i<pts.length-1;i++){
     const seg=Math.hypot(pts[i+1][0]-pts[i][0],pts[i+1][1]-pts[i][1]);
@@ -97,6 +260,7 @@ function polyAt(pts,f){ // f in [0,1] along geometric length
   }
   return pts[pts.length-1];
 }
+
 const drawn=new Set();
 for(const g of DATA.groups)for(const s of g.segs)if(s.k==="move")for(let i=0;i<s.n.length-1;i++){
   const key=[Math.min(s.n[i],s.n[i+1]),Math.max(s.n[i],s.n[i+1])].join("-");
@@ -106,6 +270,7 @@ for(const g of DATA.groups)for(const s of g.segs)if(s.k==="move")for(let i=0;i<s
   p.setAttribute("points",pts.map(q=>q.join(",")).join(" "));
   p.setAttribute("class","route");routesG.appendChild(p);
 }
+
 for(const [k,p] of Object.entries(POS)){
   const c=document.createElementNS(svgNS,"circle");
   c.setAttribute("cx",p[0]);c.setAttribute("cy",p[1]);c.setAttribute("r",k==="0"?9:7);
@@ -115,21 +280,33 @@ for(const [k,p] of Object.entries(POS)){
   t.setAttribute("x",p[0]+12);t.setAttribute("y",p[1]+4);t.setAttribute("class","spotlbl");
   t.textContent=DATA.names[k];spotsG.appendChild(t);
 }
+
 const dots=[],labels=[];
 DATA.groups.forEach((g,i)=>{
   const c=document.createElementNS(svgNS,"circle");
-  c.setAttribute("r",11);c.setAttribute("fill",HEX[i]);c.setAttribute("stroke","#fff");c.setAttribute("stroke-width",2.5);
+  c.setAttribute("r",11);c.setAttribute("fill",HEX[i]);
+  // アウトラインを背景色に合わせる
+  c.setAttribute("stroke","#0f172a");c.setAttribute("stroke-width",2.5);
   dotsG.appendChild(c);dots.push(c);
   const t=document.createElementNS(svgNS,"text");
-  t.setAttribute("fill","#fff");t.setAttribute("font-size","10");t.setAttribute("font-weight","700");
+  t.setAttribute("fill","#0f172a");t.setAttribute("font-size","10");t.setAttribute("font-weight","800");
   t.setAttribute("text-anchor","middle");t.textContent=g.name;dotsG.appendChild(t);labels.push(t);
 });
+
 const statusEl=document.getElementById("status");
 const cards=DATA.groups.map((g,i)=>{
   const d=document.createElement("div");d.className="card";
-  d.innerHTML=`<b><span class="dotchip" style="background:${HEX[i]}"></span>${g.name}</b><span></span>`;
-  statusEl.appendChild(d);return d.querySelector("span");
+  // bタグのフレックスが崩れる原因だったので、ヘッダーとボディのdivに分離
+  d.innerHTML=`
+    <div class="card-header">
+      <span class="dotchip" style="background:${HEX[i]}; box-shadow: 0 0 6px ${HEX[i]}"></span>
+      ${g.name}
+    </div>
+    <div class="card-body"></div>
+  `;
+  statusEl.appendChild(d);return d.querySelector(".card-body");
 });
+
 function posAt(g,t){
   const segs=DATA.groups[g].segs;
   if(t>=DATA.groups[g].end)return{p:POS[0],txt:"4Aに帰着済み",stay:false};
@@ -153,6 +330,7 @@ function posAt(g,t){
   }
   return{p:POS[0],txt:"4Aで待機",stay:false};
 }
+
 const slider=document.getElementById("time"),clk=document.getElementById("clk");
 function offsetFor(g,t,p){
   let count=0;
@@ -162,6 +340,7 @@ function offsetFor(g,t,p){
   }
   return[count*16,-count*6];
 }
+
 function render(){
   const t=parseFloat(slider.value);clk.textContent=t.toFixed(1);
   DATA.groups.forEach((g,i)=>{
@@ -173,9 +352,11 @@ function render(){
     cards[i].textContent=r.txt;
   });
 }
+
 slider.addEventListener("input",render);
 let playing=false,last=null;
 const btn=document.getElementById("play"),spd=document.getElementById("spd");
+
 function tick(ts){
   if(!playing)return;
   if(last!==null){
@@ -185,12 +366,14 @@ function tick(ts){
   }
   last=ts;requestAnimationFrame(tick);
 }
+
 btn.addEventListener("click",()=>{
   if(!playing){
     if(parseFloat(slider.value)>=TMAX)slider.value=0;
     playing=true;last=null;btn.textContent="⏸ 一時停止";requestAnimationFrame(tick);
   }else{playing=false;btn.textContent="▶ 再生";}
 });
+
 render();
 </script>
 </body>
